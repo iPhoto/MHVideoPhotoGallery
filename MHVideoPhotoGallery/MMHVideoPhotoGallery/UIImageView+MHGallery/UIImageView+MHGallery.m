@@ -9,6 +9,7 @@
 #import "UIImageView+MHGallery.h"
 #import "MHGallery.h"
 #import "SDImageCache.h"
+#import "UIImageView+WebCache.h"
 
 @implementation UIImageView (MHGallery)
 
@@ -57,19 +58,19 @@
         
         NSString *placeholderURL = item.thumbnailURL;
         NSString *toLoadURL = item.URLString;
-
+        
         if (imageType == MHImageTypeThumb) {
             toLoadURL = item.thumbnailURL;
             placeholderURL = item.URLString;
         }
         
-        [self setImageWithURL:[NSURL URLWithString:toLoadURL]
-             placeholderImage:[SDImageCache.sharedImageCache imageFromDiskCacheForKey:placeholderURL]
-                    completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-            if (succeedBlock) {
-                succeedBlock (image,error);
-            }
-        }];
+        [self sd_setImageWithURL:[NSURL URLWithString:toLoadURL]
+                placeholderImage:[SDImageCache.sharedImageCache imageFromDiskCacheForKey:placeholderURL]
+                       completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                           if (succeedBlock) {
+                               succeedBlock (image,error);
+                           }
+                       }];
     }
 }
 

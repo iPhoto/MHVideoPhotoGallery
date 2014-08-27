@@ -8,6 +8,7 @@
 
 #import "MHGalleryController.h"
 
+
 @implementation MHGalleryController
 
 - (id)initWithPresentationStyle:(MHGalleryViewMode)presentationStyle{
@@ -15,6 +16,8 @@
     if (!self)
         return nil;
     
+    self.autoplayVideos = NO;
+
     self.preferredStatusBarStyleMH = UIStatusBarStyleDefault;
     self.presentationStyle = presentationStyle;
     self.transitionCustomization = MHTransitionCustomization.new;
@@ -56,6 +59,9 @@
 }
 
 -(MHGalleryItem *)itemForIndex:(NSInteger)index{
+    if (index < 0 || index >= [self numberOfItemsInGallery:self]) {
+        return nil;
+    }
     return self.galleryItems[index];
 }
 -(NSInteger)numberOfItemsInGallery:(MHGalleryController *)galleryController{

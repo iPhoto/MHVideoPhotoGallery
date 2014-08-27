@@ -79,6 +79,8 @@
     
     __weak typeof(self) weakSelf = self;
 
+    [self.activityIndicator startAnimating];
+
     if (galleryItem.galleryType == MHGalleryTypeVideo) {
         [MHGallerySharedManager.sharedManager startDownloadingThumbImage:galleryItem.URLString
                                                             successBlock:^(UIImage *image,NSUInteger videoDuration,NSError *error) {
@@ -86,7 +88,6 @@
                                                                     weakSelf.thumbnail.backgroundColor = UIColor.whiteColor;
                                                                     weakSelf.thumbnail.image = MHGalleryImage(@"error");
                                                                 }else{
-                                                                    
                                                                     weakSelf.videoDurationLength.text  = [MHGallerySharedManager stringForMinutesAndSeconds:videoDuration addMinus:NO];
                                                                     
                                                                     weakSelf.thumbnail.image = image;
@@ -97,6 +98,7 @@
                                                             }];
     }else{
         [self.thumbnail setImageForMHGalleryItem:galleryItem imageType:MHImageTypeThumb successBlock:^(UIImage *image, NSError *error) {
+            [weakSelf.activityIndicator stopAnimating];
             if (!image) {
                 weakSelf.thumbnail.backgroundColor = UIColor.whiteColor;
                 weakSelf.thumbnail.image = MHGalleryImage(@"error");

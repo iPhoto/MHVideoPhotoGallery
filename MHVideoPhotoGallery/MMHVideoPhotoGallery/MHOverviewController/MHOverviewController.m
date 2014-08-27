@@ -96,9 +96,10 @@
 
 -(void)donePressed{
     self.navigationController.transitioningDelegate = nil;
-    
-    if (self.galleryViewController && self.galleryViewController.finishedCallback) {
-        self.galleryViewController.finishedCallback(0,nil,nil,MHGalleryViewModeOverView);
+
+    MHGalleryController *galleryViewController = [self galleryViewController];
+    if (galleryViewController.finishedCallback) {
+        galleryViewController.finishedCallback(0,nil,nil,MHGalleryViewModeOverView);
     }
 }
 
@@ -287,12 +288,13 @@
 
 -(void)getImageForItem:(MHGalleryItem*)item
         finishCallback:(void(^)(UIImage *image))FinishBlock{
-    [SDWebImageManager.sharedManager downloadWithURL:[NSURL URLWithString:item.URLString]
-                                             options:SDWebImageContinueInBackground
-                                            progress:nil
-                                           completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished) {
-                                               FinishBlock(image);
-                                           }];
+    
+    [SDWebImageManager.sharedManager downloadImageWithURL:[NSURL URLWithString:item.URLString]
+                                                  options:SDWebImageContinueInBackground
+                                                 progress:nil
+                                                completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                                                    FinishBlock(image);
+                                                }];
 }
 -(void)didReceiveMemoryWarning{
     [super didReceiveMemoryWarning];

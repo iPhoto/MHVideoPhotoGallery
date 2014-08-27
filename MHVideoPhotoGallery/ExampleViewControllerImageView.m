@@ -7,6 +7,7 @@
 //
 
 #import "ExampleViewControllerImageView.h"
+#import "UIImageView+WebCache.h"
 
 @interface ExampleViewControllerImageView ()
 @end
@@ -77,7 +78,7 @@
     }];
     
     
-    [self.iv setImageWithURL:[NSURL URLWithString:landschaft.URLString]];
+    [self.iv sd_setImageWithURL:[NSURL URLWithString:landschaft.URLString]];
     [self.iv setUserInteractionEnabled:YES];
     
     self.iv.shoudlUsePanGestureReconizer = YES;

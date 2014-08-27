@@ -3,57 +3,93 @@
 </p>
 ==================
 
-#### Podfile
+## Podfile
 
 ```ruby
 platform :ios, '7.0'
-pod 'MHVideoPhotoGallery', '~> 1.6'
+pod 'MHVideoPhotoGallery'
 ```
-####Supported Videos
+##Supported Videos
 ```ruby
 Youtube
 Vimeo
 Weblinks (.mov, .mp4, .mpv)
 ```
-####Dismiss Video (Like Paper App)
+##Supported Languages
+```ruby
+DE,EN,ES,FR,HR
+```
+##MHGalleryItem 
+```objective-c
++ (instancetype)itemWithURL:(NSString *)URLString thumbnailURL:(NSString*)thumbnailURL; //Thumbs are automatically generated for Videos. But you can set Thumb Images for GalleryTypeImage.
++ (instancetype)itemWithURL:(NSString*)URLString galleryType:(MHGalleryType)galleryType;
++ (instancetype)itemWithYoutubeVideoID:(NSString*)ID;
++ (instancetype)itemWithVimeoVideoID:(NSString*)ID;
++ (instancetype)itemWithImage:(UIImage*)image;
+```
 
-![alt tag](https://dl.dropboxusercontent.com/u/17911939/dismissInteractiveVideo.gif)
+##MHGalleryController
+```objective-c
 
-####Dismiss Image (Like Paper App)
++(instancetype)galleryWithPresentationStyle:(MHGalleryViewMode)presentationStyle;
 
-![alt tag](https://dl.dropboxusercontent.com/u/17911939/dismissInteractive.gif)
+@property (nonatomic,assign) id<MHGalleryDelegate>              galleryDelegate;
+@property (nonatomic,assign) id<MHGalleryDataSource>            dataSource;
+@property (nonatomic,assign) BOOL                               autoplayVideos; //Default NO
+@property (nonatomic,assign) NSInteger                          presentationIndex; //From which index you want to present the Gallery.
+@property (nonatomic,strong) UIImageView                        *presentingFromImageView;
+@property (nonatomic,strong) MHGalleryImageViewerViewController *imageViewerViewController;
+@property (nonatomic,strong) MHOverviewController               *overViewViewController;
+@property (nonatomic,strong) NSArray                            *galleryItems; //You can set an Array of GalleryItems or you can use the dataSource.
+@property (nonatomic,strong) MHTransitionCustomization          *transitionCustomization; //Use transitionCustomization to Customize the GalleryControllers transitions
+@property (nonatomic,strong) MHUICustomization                  *UICustomization; //Use UICustomization to Customize the GalleryControllers UI
+@property (nonatomic,strong) MHTransitionPresentMHGallery       *interactivePresentationTransition;
+@property (nonatomic,assign) MHGalleryViewMode                  presentationStyle;
+@property (nonatomic,assign) UIStatusBarStyle                   preferredStatusBarStyleMH;
 
-####Dismiss at the end or start on ScrollDirection (Like Paper App)
+@property (nonatomic, copy) void (^finishedCallback)(NSUInteger currentIndex,UIImage *image,MHTransitionDismissMHGallery *interactiveTransition,MHGalleryViewMode viewMode);
 
-![alt tag](https://dl.dropboxusercontent.com/u/17911939/dismissAtTheEnd.gif)
-
-####OverView interactive (dismiss & present)
-
-![alt tag](https://dl.dropboxusercontent.com/u/17911939/interactive.gif)
-
-####Share
-
-![alt tag](https://dl.dropboxusercontent.com/u/17911939/ShareView.gif)
-
-####OverView 
-
-![alt tag](https://dl.dropboxusercontent.com/u/17911939/OverView.gif)
+```
 
 
-####How to use
+##UI Customization
+```objective-c
+@property (nonatomic)        UIBarStyle barStyle; //Default UIBarStyleDefault
+@property (nonatomic,strong) UIColor *barTintColor; //Default nil
+@property (nonatomic,strong) UIColor *barButtonsTintColor; //Default nil
+@property (nonatomic,strong) UIColor *videoProgressTintColor; //Default Black
+@property (nonatomic)        BOOL showMHShareViewInsteadOfActivityViewController; //Default YES
+@property (nonatomic)        BOOL hideShare; //Default NO
+@property (nonatomic)        BOOL useCustomBackButtonImageOnImageViewer; //Default YES
+@property (nonatomic)        BOOL showOverView; //Default YES
+@property (nonatomic)        MHBackButtonState backButtonState; //Default MHBackButtonStateWithBackArrow
+
+@property (nonatomic,strong) UICollectionViewFlowLayout *overViewCollectionViewLayoutLandscape;
+@property (nonatomic,strong) UICollectionViewFlowLayout *overViewCollectionViewLayoutPortrait;
+
+-(void)setMHGalleryBackgroundColor:(UIColor*)color forViewMode:(MHGalleryViewMode)viewMode;
+-(UIColor*)MHGalleryBackgroundColorForViewMode:(MHGalleryViewMode)viewMode;
+```
+
+##Transition Customization
+```objective-c
+@property (nonatomic)       BOOL interactiveDismiss; //Default YES
+@property (nonatomic)       BOOL dismissWithScrollGestureOnFirstAndLastImage;//Default YES
+@property (nonatomic)       BOOL fixXValueForDismiss; //Default NO
+```
+
+##Usage
 
 ```objective-c
 
 
-UIImageView *imageView = [(ImageTableViewCell*)[tableView cellForRowAtIndexPath:indexPath] iv];
+UIImageView *imageView = [(ImageTableViewCell*)[tableView cellForRowAtIndexPath:indexPath] imageView];
         
-MHGalleryItem *image1 = [[MHGalleryItem alloc]initWithURL:@"http://p1.pichost.me/i/40/1638707.jpg"
-                                                       galleryType:MHGalleryTypeImage];
-    
-MHGalleryItem *image2 = [[MHGalleryItem alloc]initWithURL:@"http://4.bp.blogspot.com/-8O0ZkAgb6Bo/Ulf_80tUN6I/AAAAAAAAH34/I1L2lKjzE9M/s1600/Beautiful-Scenery-Wallpapers.jpg"
-                                                       galleryType:MHGalleryTypeImage];
+MHGalleryItem *image1 = [MHGalleryItem itemWithURL:@"myImageURL" galleryType:MHGalleryTypeImage];
+MHGalleryItem *image2 = [MHGalleryItem itemWithURL:@"myImageURL" galleryType:MHGalleryTypeImage];
+MHGalleryItem *youtube = [MHGalleryItem itemWithYoutubeVideoID:@"myYoutubeID"];
 
-NSArray *galleryData = @[image1,image2];
+NSArray *galleryData = @[image1,image2,youtube];
     
     MHGalleryController *gallery = [MHGalleryController galleryWithPresentationStyle:MHGalleryViewModeImageViewerNavigationBarShown];
 gallery.galleryItems = galleryData;
@@ -76,6 +112,38 @@ gallery.finishedCallback = ^(NSUInteger currentIndex,UIImage *image,MHTransition
     };    
 [self presentMHGalleryController:gallery animated:YES completion:nil];
 ```
+
+##Dismiss Video (Like Paper App)
+
+![alt tag](https://dl.dropboxusercontent.com/u/17911939/dismissInteractiveVideo.gif)
+
+##Dismiss Image (Like Paper App)
+
+![alt tag](https://dl.dropboxusercontent.com/u/17911939/dismissInteractive.gif)
+
+##Dismiss at the end or start on ScrollDirection (Like Paper App)
+
+![alt tag](https://dl.dropboxusercontent.com/u/17911939/dismissAtTheEnd.gif)
+
+##OverView interactive (dismiss & present)
+
+![alt tag](https://dl.dropboxusercontent.com/u/17911939/interactive.gif)
+
+##Share
+
+![alt tag](https://dl.dropboxusercontent.com/u/17911939/ShareView.gif)
+
+##OverView 
+
+![alt tag](https://dl.dropboxusercontent.com/u/17911939/OverView.gif)
+
+## Donating
+
+Support this project via gittip.
+
+<a href="https://www.gittip.com/mariohahn/">
+  <img alt="Support via Gittip" src="https://rawgithub.com/twolfson/gittip-badge/0.2.0/dist/gittip.png"/>
+</a>
 
 	
 
